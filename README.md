@@ -572,3 +572,205 @@ mcp-client on  master [?] ➜  uv run python complete_client.py
 * Callback implementation patterns
 * Integration with existing Python applications
 * Monitoring and logging for MCP operations
+
+---------------------------------------------------------------------------------
+
+# Kubernetes MCP Server Integration with Roo-Code
+
+🤖 Kubernetes Cluster Management with AI
+In this lab, you'll learn to integrate the Kubernetes MCP server with Roo-Code to manage your Kubernetes cluster using natural language commands. This powerful combination allows you to interact with your cluster through AI assistance.
+
+What you'll accomplish:
+
+1. **Building Production MCP Clients**
+2. Kubernetes MCP Server Integration with Roo-Code
+   1. Step 1: Explore the Kubernetes Environment
+   2. Step 2: Understanding the k8s-mcp-server
+   3. Step 3: Pull the Docker Image
+   4. Step 4: Configure MCP Server in Roo-Code
+   5. Step 5: Connect and Test the MCP Server
+   6. Step 6: Practical Hands-on Tasks
+
+🌐 Cloud Environment: You'll work with a pre-configured Kubernetes cluster and integrate it with Roo-Code's AI capabilities.
+
+## Step 1: Explore the Kubernetes Environment
+
+Let's start by exploring what's already running in your Kubernetes cluster. Use kubectl commands to discover the current state of your cluster.
+
+🔍 Exploration Tasks:
+
+1. Check what namespaces exist in the cluster
+2. List all pods across all namespaces
+3. Check what nodes are available
+4. Explore any running services
+
+Commands to run:
+
+```
+kubectl get namespaces
+kubectl get pods --all-namespaces
+kubectl get nodes
+kubectl get services --all-namespaces
+```
+
+
+```shell
+~ ➜  k get ns
+NAME              STATUS   AGE
+default           Active   10h
+kube-node-lease   Active   10h
+kube-public       Active   10h
+kube-system       Active   10h
+
+~ ➜  k get pods --all-namespaces
+NAMESPACE     NAME                                      READY   STATUS      RESTARTS   AGE
+kube-system   coredns-697968c856-f5crd                  1/1     Running     0          10h
+kube-system   helm-install-traefik-crd-4k8nz            0/1     Completed   0          10h
+kube-system   helm-install-traefik-r5dml                0/1     Completed   2          10h
+kube-system   local-path-provisioner-774c6665dc-b6jbv   1/1     Running     0          10h
+kube-system   metrics-server-6f4c6675d5-t8v5k           1/1     Running     0          10h
+kube-system   svclb-traefik-c6146fd4-2q72v              2/2     Running     0          10h
+kube-system   traefik-c98fdf6fb-jprlp                   1/1     Running     0          10h
+
+~ ➜  k get nodes
+NAME          STATUS   ROLES                  AGE   VERSION
+clusternode   Ready    control-plane,master   10h   v1.33.0+k3s1
+
+~ ➜  kubectl get services --all-namespaces
+NAMESPACE     NAME             TYPE           CLUSTER-IP      EXTERNAL-IP       PORT(S)                      AGE
+default       kubernetes       ClusterIP      10.43.0.1       <none>            443/TCP                      10h
+kube-system   kube-dns         ClusterIP      10.43.0.10      <none>            53/UDP,53/TCP,9153/TCP       10h
+kube-system   metrics-server   ClusterIP      10.43.101.106   <none>            443/TCP                      10h
+kube-system   traefik          LoadBalancer   10.43.124.103   192.168.139.224   80:31342/TCP,443:30964/TCP   10h
+```
+
+## Step 2: Understanding the k8s-mcp-server
+
+Before we configure the MCP server, let's understand what the k8s-mcp-server provides.
+
+🔍 Key Features:
+
+* 16 Kubernetes Tools - Complete cluster management capabilities
+* Pod Operations - List, describe, get logs, delete pods
+* Node Management - Get node information and metrics
+* Resource Operations - Create, update, and manage Kubernetes resources
+* Helm Integration - Install, upgrade, and manage Helm charts
+* Event Monitoring - Get cluster events and troubleshooting information
+
+🚀 Benefits:
+
+* Natural language cluster management
+* AI-powered troubleshooting
+* Automated resource management
+* Seamless integration with Roo-Code
+
+## Step 3: Pull the Docker Image
+
+Now let's get the k8s-mcp-server Docker image ready for use.
+
+🐳 Docker Task:
+
+1. Pull the latest k8s-mcp-server image from Docker Hub
+2. Verify the image was downloaded successfully
+3. Check the image details
+
+Commands to run:
+
+```shell
+sudo docker pull ginnux/k8s-mcp-server:latest
+sudo docker images | grep k8s-mcp-server
+sudo docker inspect ginnux/k8s-mcp-server:latest
+```
+
+## Step 4: Configure MCP Server in Roo-Code
+
+Now let's integrate the k8s-mcp-server with Roo-Code so you can manage your Kubernetes cluster using natural language.
+
+⚙️ Configuration Steps:
+
+1. Click on the 🦘 kangaroo icon to open Roo-Code
+2. Click on the 3 servers icon at the top of Roo-Code
+3. Go to Edit Project MCP
+4. Add the following configuration to your MCP settings
+
+📋 Configuration to add:
+
+```
+
+{
+  "mcpServers": {
+    "k8s-mcp-server": {
+      "command": "sudo",
+      "args": [
+        "docker",
+        "run",
+        "-i",
+        "--rm",
+        "-v",
+        "/home/lab-user/.kube/config:/home/appuser/.kube/config:ro",
+        "ginnux/k8s-mcp-server:latest",
+        "--mode",
+        "stdio"
+      ]
+    }
+  }
+}
+```
+
+🔧 Configuration Explanation:
+
+* sudo docker run - Runs the container with elevated privileges
+* -i --rm - Interactive mode, remove container after use
+* -v /home/lab-user/.kube/config:/home/appuser/.kube/config:ro - Mounts your kubeconfig as read-only
+* --mode stdio - Uses standard I/O for MCP communication
+
+## Step 5: Connect and Test the MCP Server
+
+Now that the k8s-mcp-server is configured, let's test the connection and start using it to manage your cluster.
+
+🔗 Connection Test:
+
+Ask Roo-Code to connect to your Kubernetes cluster
+Verify the connection is working
+
+💬 Try these natural language commands:
+
+* "Connect to my Kubernetes cluster"
+* "Show me the status of my cluster"
+* "List all namespaces in my cluster"
+* "What nodes do I have?"
+
+🎯 Expected Behavior:
+
+* Roo-Code should recognize the k8s-mcp-server
+* It should be able to execute kubectl-like commands
+* You should see cluster information in natural language
+
+## Step 6: Practical Hands-on Tasks
+
+Now let's test the k8s-mcp-server with real Kubernetes operations. We'll create resources and then simulate a troubleshooting scenario.
+
+🚀 Task 1: Create an Nginx Pod
+
+1. Ask Roo-Code: "Create an nginx pod with nginx image"
+2. Verify the pod was created successfully
+3. Check the pod status using Roo-Code
+
+🔍 Task 2: Verify Pod Creation
+
+1. Ask Roo-Code: "Show me the status of the nginx pod"
+2. Confirm the pod is running
+3. Check pod details and logs if needed
+
+⚠️ Task 3: Simulate a Broken Scenario
+
+1. Create a pod with an incorrect image: "Create a pod named test-pod with image BUSYYBOX"
+2. Ask Roo-Code to identify the root cause of the issue
+3. Use natural language to troubleshoot: "Why is my test-pod not starting?"
+
+🎯 Learning Objectives:
+
+* Practice creating Kubernetes resources with AI
+* Learn to verify resource creation
+* Experience AI-powered troubleshooting
+* Understand how to ask for help with broken resources
